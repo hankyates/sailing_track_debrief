@@ -32,18 +32,19 @@
   #vmgBar{background:linear-gradient(180deg,#0f2040,#0b1220);border-bottom:1px solid #1e335e;padding:10px 16px}
   #vmgBar h3{margin:0 0 8px;font-size:13px;letter-spacing:.07em;text-transform:uppercase;opacity:.9;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
   .vmg-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:stretch}
-  .vmg-card{border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;justify-content:center;min-height:92px;border:1px solid #2a4a8a;position:relative;overflow:hidden}
+  .vmg-card{border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;justify-content:center;gap:6px;min-height:150px;border:1px solid #2a4a8a;position:relative;overflow:hidden}
   .vmg-card.A{background:linear-gradient(135deg,#1e3a5f 0%,#1d4ed8 100%);border-color:#3b82f6}
   .vmg-card.B{background:linear-gradient(135deg,#7c2d12 0%,#ea580c 100%);border-color:#f97316}
-  .vmg-card.CENTER{background:#111c33;border-style:dashed;display:flex;align-items:center;justify-content:center;text-align:center;min-width:160px}
+  .vmg-card.CENTER{background:#111c33;border-style:dashed;display:flex;align-items:center;justify-content:center;text-align:center;min-width:180px}
   .vmg-label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;opacity:.85;font-weight:700}
-  .vmg-value{font-size:42px;font-weight:800;line-height:1;letter-spacing:-.02em;margin:4px 0 2px;white-space:nowrap}
-  .vmg-sub{font-size:13px;opacity:.8}
-  .vmg-meta{font-size:11px;opacity:.7;margin-top:4px}
-  .vmg-delta{font-size:22px;font-weight:800;line-height:1}
+  .vmg-cols{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:4px}
+  .vmg-cols.c2{grid-template-columns:repeat(2,1fr)}
+  .vmg-col{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 2px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:10px;min-width:0}
+  .m-value{font-size:15px;font-weight:700;white-space:nowrap}
+  .m-label{font-size:10px;letter-spacing:.03em;text-transform:uppercase;opacity:.78;font-weight:600;line-height:1.25;text-align:center}
   .vmg-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
   #windward-legacy{margin-top:0;padding:0;border:none;background:transparent}
-  @media(max-width:700px){ .vmg-grid{grid-template-columns:1fr; } .vmg-card.CENTER{order:3} .vmg-value{font-size:36px} #map{height:50vh} }
+  @media(max-width:700px){ .vmg-grid{grid-template-columns:1fr; } .vmg-card.CENTER{order:3} .m-value{font-size:14px} #map{height:50vh} }
 </style>
 </head>
 <body>
@@ -52,37 +53,45 @@
   <p>Blue = Henry &nbsp;|&nbsp; Orange = Hank &nbsp;|&nbsp; Timeline = session overlap, discretized to 1 s &nbsp;|&nbsp; <span id="curFiles" class="mono"></span></p>
 </div>
 <div id="vmgBar">
-  <h3>▲ Windward Mark &amp; VMG <span class="badge" id="wmBadge">no mark</span> <span class="mono" id="wmCoords" style="font-size:12px;opacity:.8"></span> <span style="margin-left:auto;display:flex;gap:8px"><button id="setMarkBtn">📍 Set windward mark (click map)</button><button id="clearMarkBtn" disabled>Clear</button></span></h3>
+  <h3>▲ Windward Mark <span class="badge" id="wmBadge">no mark</span> <span class="mono" id="wmCoords" style="font-size:12px;opacity:.8"></span> <span style="margin-left:auto;display:flex;gap:8px"><button id="setMarkBtn">📍 Set windward mark (click map)</button><button id="clearMarkBtn" disabled>Clear</button></span></h3>
   <div class="vmg-grid">
     <div class="vmg-card A">
-      <div class="vmg-label" style="color:#bfdbfe">● Henry — VMG to mark</div>
-      <div class="vmg-value" id="vmgA">—</div>
-      <div class="vmg-sub" id="vmgA2"></div>
-      <div class="vmg-meta mono"><span id="distA">—</span> to mark · SOG <span id="sogA">—</span></div>
+      <div class="vmg-label" style="color:#bfdbfe">● Henry</div>
+      <div class="vmg-cols">
+        <div class="vmg-col"><div class="m-value mono" id="vmgA">—</div><div class="m-label">VMG</div></div>
+        <div class="vmg-col"><div class="m-value mono" id="sogA">—</div><div class="m-label">SOG</div></div>
+        <div class="vmg-col"><div class="m-value mono" id="distA">—</div><div class="m-label">Dist to mark</div></div>
+        <div class="vmg-col"><div class="m-value mono" id="angA">—</div><div class="m-label">Heading−mark</div></div>
+      </div>
     </div>
     <div class="vmg-card CENTER">
       <div>
         <div class="vmg-label">Δ (Henry − Hank)</div>
-        <div class="vmg-delta" id="vmgDelta">—</div>
-        <div class="vmg-meta mono" id="vmgDeltaSub" style="opacity:.6"></div>
-        <div class="mono" style="font-size:11px;opacity:.5;margin-top:6px">+ favors Henry (blue)</div>
+        <div class="vmg-cols c2">
+          <div class="vmg-col"><div class="m-value mono" id="vmgDelta">—</div><div class="m-label">Δ VMG</div></div>
+          <div class="vmg-col"><div class="m-value mono" id="closerDelta">—</div><div class="m-label">Δ Dist</div></div>
+        </div>
+        <div class="mono" style="font-size:11px;opacity:.55;margin-top:8px">+ favors Henry (blue) &nbsp; − favors Hank (orange)</div>
       </div>
     </div>
     <div class="vmg-card B">
-      <div class="vmg-label" style="color:#ffedd5">● Hank — VMG to mark</div>
-      <div class="vmg-value" id="vmgB">—</div>
-      <div class="vmg-sub" id="vmgB2"></div>
-      <div class="vmg-meta mono"><span id="distB">—</span> to mark · SOG <span id="sogB">—</span></div>
+      <div class="vmg-label" style="color:#ffedd5">● Hank</div>
+      <div class="vmg-cols">
+        <div class="vmg-col"><div class="m-value mono" id="vmgB">—</div><div class="m-label">VMG</div></div>
+        <div class="vmg-col"><div class="m-value mono" id="sogB">—</div><div class="m-label">SOG</div></div>
+        <div class="vmg-col"><div class="m-value mono" id="distB">—</div><div class="m-label">Dist to mark</div></div>
+        <div class="vmg-col"><div class="m-value mono" id="angB">—</div><div class="m-label">Heading−mark</div></div>
+      </div>
     </div>
   </div>
-  <div class="mono" style="font-size:11px;opacity:.45;margin-top:8px">VMG = −d/dt(distance to mark), central diff over ±1 s on per-second interpolated track · + = closing on mark · Knots = m/s ÷ 0.5144 · Click map to place ★, drag to move. <span id="vmgHint" style="opacity:1;color:#facc15;display:none"> — Set a windward mark to see VMG</span></div>
+  <div class="mono" style="font-size:11px;opacity:.45;margin-top:8px">VMG = −d/dt(distance to mark), central diff over ±1 s on per-second interpolated track · + = closing on mark · Heading−mark = bearing of travel vs bearing to mark (0–180°) · Knots = m/s ÷ 0.5144 · Click map to place ★, drag to move. <span id="vmgHint" style="opacity:1;color:#facc15;display:none"> — Set a windward mark to see metrics</span></div>
 </div>
 <div id="map"></div>
 <div id="controls">
   <div class="legend">
     <span><i class="dot" style="background:#3b82f6"></i> Henry</span>
     <span><i class="dot" style="background:#f97316"></i> Hank</span>
-    <span style="opacity:.7">Bright = ±10 s trail around cursor &nbsp; Full track hidden &nbsp; Trim window = ✂ buttons</span>
+    <span style="opacity:.7">Solid = 10 s behind · Faint = 10 s ahead &nbsp; Full track shown (Hide button below) &nbsp; Trim window = ✂ buttons</span>
     <span class="mono" style="margin-left:auto;opacity:.6;font-size:11px">Tip: pick windward mark above — VMG updates live as you scrub</span>
   </div>
   <div id="slider-row">
@@ -135,6 +144,8 @@ const faintB = L.polyline(fullB, {color:'#f97316', weight:3, opacity:0.28}).addT
 // bright sailed portions
 const trailA = L.polyline([], {color:'#3b82f6', weight:4, opacity:0.95}).addTo(map);
 const trailB = L.polyline([], {color:'#f97316', weight:4, opacity:0.95}).addTo(map);
+const leadA = L.polyline([], {color:'#3b82f6', weight:3, opacity:0.28}).addTo(map);
+const leadB = L.polyline([], {color:'#f97316', weight:3, opacity:0.28}).addTo(map);
 
 const dotA = L.circleMarker([0,0], {radius:7, color:'#fff', weight:2, fillColor:'#3b82f6', fillOpacity:1}).addTo(map);
 const dotB = L.circleMarker([0,0], {radius:7, color:'#fff', weight:2, fillColor:'#f97316', fillOpacity:1}).addTo(map);
@@ -158,7 +169,7 @@ function updateWindowMarkers() {
 }
 
 function fitBounds() {
-  const all = L.featureGroup([faintA, faintB, trailA, trailB]);
+  const all = L.featureGroup([faintA, faintB, trailA, trailB, leadA, leadB]);
   const b = all.getBounds();
   if(!b.isValid()) return;
   map.fitBounds(b.pad(0.12));
@@ -180,6 +191,8 @@ function loadSession(key) {
   }
   trailA.setLatLngs([]);
   trailB.setLatLngs([]);
+  leadA.setLatLngs([]);
+  leadB.setLatLngs([]);
   dotA.setLatLng(secA[0]);
   dotB.setLatLng(secB[0]);
   if(curFilesEl) curFilesEl.textContent = s.henryFile + ' + ' + s.hankFile;
@@ -234,7 +247,8 @@ function loadPrefs() {
     savedTrims = JSON.parse(localStorage.getItem('srd:trims')||'{}') || {};
     const w = localStorage.getItem('srd:windward');
     if(w) { const p=JSON.parse(w); if(Array.isArray(p) && p.length===2) windward=p; }
-    showFull = localStorage.getItem('srd:showFull')==='1';
+    const sf = localStorage.getItem('srd:showFull');
+    if(sf!==null) showFull = sf==='1';
     const sp = localStorage.getItem('srd:speed');
     if(sp && speedSel && ['1','2','5'].includes(sp)) speedSel.value = sp;
   } catch(e) { savedTrims = {}; }
@@ -280,11 +294,11 @@ let windwardMarker = null;
 let lineA = L.polyline([], {color:'#60a5fa', weight:2, opacity:0.55, dashArray:'6 6'}).addTo(map);
 let lineB = L.polyline([], {color:'#fb923c', weight:2, opacity:0.55, dashArray:'6 6'}).addTo(map);
 const vmgAel=document.getElementById('vmgA'), vmgBel=document.getElementById('vmgB');
-const vmgA2=document.getElementById('vmgA2'), vmgB2=document.getElementById('vmgB2');
 const vmgDeltaEl=document.getElementById('vmgDelta');
-const vmgDeltaSub=document.getElementById('vmgDeltaSub');
 const distAel=document.getElementById('distA'), distBel=document.getElementById('distB');
 const sogAel=document.getElementById('sogA'), sogBel=document.getElementById('sogB');
+const angAel=document.getElementById('angA'), angBel=document.getElementById('angB');
+const closerDeltaEl=document.getElementById('closerDelta');
 const wmBadge=document.getElementById('wmBadge'), wmCoords=document.getElementById('wmCoords');
 const vmgHint=document.getElementById('vmgHint');
 
@@ -320,11 +334,12 @@ function updateWindwardUI(){
     wmBadge.textContent='no mark'; wmBadge.style.background='#162b5a'; wmBadge.style.color='#e6eefc';
     wmCoords.textContent='';
     document.getElementById('clearMarkBtn').disabled=true;
-    vmgAel.textContent='—'; vmgBel.textContent='—'; vmgA2.textContent='set windward mark'; vmgB2.textContent='set windward mark';
-    vmgA2.style.opacity='.6'; vmgB2.style.opacity='.6';
-    vmgDeltaEl.textContent='—'; if(vmgDeltaSub) vmgDeltaSub.textContent='';
+    vmgAel.textContent='—'; vmgBel.textContent='—';
+    vmgDeltaEl.textContent='—';
     distAel.textContent='—'; distBel.textContent='—';
     sogAel.textContent='—'; sogBel.textContent='—';
+    angAel.textContent='—'; angBel.textContent='—';
+    closerDeltaEl.textContent='—';
     vmgHint.style.display='inline';
   }
 }
@@ -359,20 +374,46 @@ function sogForTrack(sec, i) {
   return haversine(sec[i-1],sec[i+1])/2;
 }
 function fmtKn(mps){ if(!isFinite(mps)) return '—'; return (mps/0.514444).toFixed(1)+' kn'; }
-function fmtMs(v){ if(!isFinite(v)) return ''; return `(${v>0?'+':''}${v.toFixed(2)} m/s)`; }
+function bearing(a,b){
+  const toRad=x=>x*Math.PI/180, toDeg=x=>x*180/Math.PI;
+  const la1=toRad(a[0]), la2=toRad(b[0]);
+  const dLon=toRad(b[1]-a[1]);
+  const y=Math.sin(dLon)*Math.cos(la2);
+  const x=Math.cos(la1)*Math.sin(la2)-Math.sin(la1)*Math.cos(la2)*Math.cos(dLon);
+  return (toDeg(Math.atan2(y,x))+360)%360;
+}
+function headingAt(sec,i){
+  const n=sec.length;
+  if(n<=1) return NaN;
+  if(i<=0) return bearing(sec[0],sec[1]);
+  if(i>=n-1) return bearing(sec[n-2],sec[n-1]);
+  return bearing(sec[i-1],sec[i+1]);
+}
+function angleDiffToMark(sec, i, mark){
+  if(!mark) return NaN;
+  const hd=headingAt(sec,i);
+  if(!isFinite(hd)) return NaN;
+  const mb=bearing(sec[i], mark);
+  let d=Math.abs(hd-mb);
+  if(d>180) d=360-d;
+  return d;
+}
+function fmtDeg(d){ if(!isFinite(d)) return '—'; return Math.round(d)+'°'; }
 function fmtDist(m){ if(!isFinite(m)) return '—'; return m<1000? m.toFixed(0)+' m' : (m/1000).toFixed(2)+' km'; }
 
-let trimStart=0, trimEnd=N, showFull=false;
+let trimStart=0, trimEnd=N, showFull=true;
 let idx=0;
 function render(i) {
   idx=Math.max(trimStart, Math.min(trimEnd-1, i));
   slider.value=idx;
   const t=T0+idx;
   const pa=secA[idx], pb=secB[idx];
-  // ±10s lead/lag trail around cursor, clipped to trim window
+  // ±10s trail: solid behind (lag), transparent ahead (lead); clipped to trim window
   const w0=Math.max(trimStart, idx-10), w1=Math.min(trimEnd-1, idx+10);
-  trailA.setLatLngs(secA.slice(w0, w1+1));
-  trailB.setLatLngs(secB.slice(w0, w1+1));
+  trailA.setLatLngs(secA.slice(w0, idx+1));
+  trailB.setLatLngs(secB.slice(w0, idx+1));
+  leadA.setLatLngs(secA.slice(idx, w1+1));
+  leadB.setLatLngs(secB.slice(idx, w1+1));
   dotA.setLatLng(pa);
   dotB.setLatLng(pb);
   dotA.setTooltipContent(fmtKn(sogForTrack(secA, idx)));
@@ -391,23 +432,29 @@ function render(i) {
     lineB.setLatLngs([pb, windward]);
     const ra=vmgForTrack(secA, idx, windward);
     const rb=vmgForTrack(secB, idx, windward);
-    vmgAel.textContent=fmtVMG(ra.vmgMs); vmgA2.textContent=fmtMs(ra.vmgMs);
-    vmgBel.textContent=fmtVMG(rb.vmgMs); vmgB2.textContent=fmtMs(rb.vmgMs);
+    vmgAel.textContent=fmtVMG(ra.vmgMs);
+    vmgBel.textContent=fmtVMG(rb.vmgMs);
     // color hint: positive green, negative red
     vmgAel.style.color = ra.vmgMs>0 ? '#86efac' : ra.vmgMs<0 ? '#fca5a5' : '#fff';
     vmgBel.style.color = rb.vmgMs>0 ? '#86efac' : rb.vmgMs<0 ? '#fca5a5' : '#fff';
+    sogAel.textContent=fmtKn(ra.sogMs);
+    sogBel.textContent=fmtKn(rb.sogMs);
+    distAel.textContent=fmtDist(ra.dist);
+    distBel.textContent=fmtDist(rb.dist);
+    angAel.textContent=fmtDeg(angleDiffToMark(secA, idx, windward));
+    angBel.textContent=fmtDeg(angleDiffToMark(secB, idx, windward));
+    // center deltas (Henry − Hank): sign tied to color, + favors Henry (blue)
+    const dc = rb.dist - ra.dist;
+    if(isFinite(dc)){
+      if(Math.abs(dc)<0.5){ closerDeltaEl.textContent='0 m'; closerDeltaEl.style.color='#fff'; }
+      else { closerDeltaEl.textContent=(dc>0?'+':'-')+fmtDist(Math.abs(dc)); closerDeltaEl.style.color=dc>0 ? '#60a5fa' : '#fb923c'; }
+    } else { closerDeltaEl.textContent='—'; closerDeltaEl.style.color=''; }
     const delta = ra.vmgMs - rb.vmgMs;
     if(isFinite(delta)){
       const dkn=delta/0.514444; const s=dkn>0?'+':''; 
       vmgDeltaEl.textContent = `${s}${dkn.toFixed(2)} kn`;
-      if(vmgDeltaSub) vmgDeltaSub.textContent = `${s}${delta.toFixed(2)} m/s`;
-      const col = Math.abs(dkn)<0.05 ? '#fff' : dkn>0 ? '#60a5fa' : '#fb923c';
-      vmgDeltaEl.style.color = col; if(vmgDeltaSub) vmgDeltaSub.style.color = col;
-    } else { vmgDeltaEl.textContent='—'; if(vmgDeltaSub) vmgDeltaSub.textContent=''; }
-    distAel.textContent=fmtDist(ra.dist);
-    distBel.textContent=fmtDist(rb.dist);
-    sogAel.textContent=fmtVMG(ra.sogMs);
-    sogBel.textContent=fmtVMG(rb.sogMs);
+      vmgDeltaEl.style.color = Math.abs(dkn)<0.05 ? '#fff' : dkn>0 ? '#60a5fa' : '#fb923c';
+    } else { vmgDeltaEl.textContent='—'; vmgDeltaEl.style.color=''; }
   } else {
     lineA.setLatLngs([]); lineB.setLatLngs([]);
   }
